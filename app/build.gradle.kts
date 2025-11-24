@@ -38,10 +38,13 @@ android {
     buildFeatures {
         compose = true
     }
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.14" // Or a compatible version
+    }
 }
 
 dependencies {
-
+    implementation("androidx.compose.material:material-icons-extended:1.7.0-beta01") // Or the latest version
     implementation(platform("com.google.firebase:firebase-bom:33.5.0"))
     implementation("com.google.firebase:firebase-auth-ktx")
     implementation("com.google.firebase:firebase-firestore-ktx")
