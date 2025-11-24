@@ -1,10 +1,11 @@
 package com.projectpam.taskmate.ui.components
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Button
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,131 +14,169 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 
 @Composable
 fun TaskSummarySection(
     todayCount: Int,
     overdueCount: Int,
     totalCount: Int,
-    onAddTaskClick: () -> Unit
+    onAddTaskClick: () -> Unit = {},
+    modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = Modifier.fillMaxWidth()
+    Column(modifier = modifier.fillMaxWidth()) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(180.dp), // Height adjustment to match visual proportions
+        horizontalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Row card besar (Hari ini) + 2 card kecil di kanan
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        // Left Card: Tugas Hari Ini (Big)
+        Card(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxHeight(),
+            colors = CardDefaults.cardColors(
+                containerColor = Color(0xFFDCE1FF) // Light Blueish from image
+            ),
+            shape = MaterialTheme.shapes.large
         ) {
-
-            // Card "Tugas Hari Ini" (besar, kiri)
-            Card(
-                modifier = Modifier
-                    .weight(1.4f)
-                    .height(110.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = Color(0xFFEDF0FF) // soft ungu kebiruan
-                )
-            ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(12.dp),
-                    verticalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        text = "$todayCount",
-                        style = MaterialTheme.typography.headlineMedium,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4B4AEF)
-                    )
-                    Column {
-                        Text(
-                            text = "Tugas",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Black.copy(alpha = 0.6f)
-                        )
-                        Text(
-                            text = "Hari Ini",
-                            style = MaterialTheme.typography.bodyMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
-                    }
-                }
-            }
-
             Column(
                 modifier = Modifier
-                    .weight(1f)
-                    .height(110.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                // Card "Terelewat"
-                Card(
-                    modifier = Modifier.weight(1f),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFFFE6E6)
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "$overdueCount",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFFE45A5A)
-                        )
-                        Text(
-                            text = "Terelewat",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Black.copy(alpha = 0.7f)
-                        )
-                    }
-                }
+                // Number
+                Text(
+                    text = "$todayCount",
+                    fontSize = 80.sp, // Very large font as per design
+                    fontWeight = FontWeight.Bold,
+                    color = Color(0xFF4B4AEF) // Darker Blue
+                )
 
-                // Card "Semua"
-                Card(
-                    modifier = Modifier.weight(1f),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Color(0xFFE6FFF6)
+                // Label
+                Column {
+                    Text(
+                        text = "Tugas",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = Color.Black.copy(alpha = 0.5f)
                     )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(10.dp),
-                        verticalArrangement = Arrangement.Center
-                    ) {
-                        Text(
-                            text = "$totalCount",
-                            style = MaterialTheme.typography.titleLarge,
-                            fontWeight = FontWeight.Bold,
-                            color = Color(0xFF1A9E72)
-                        )
-                        Text(
-                            text = "Semua",
-                            style = MaterialTheme.typography.bodySmall,
-                            color = Color.Black.copy(alpha = 0.7f)
-                        )
-                    }
+                    Text(
+                        text = "Hari Ini",
+                        style = MaterialTheme.typography.headlineSmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = Color(0xFF4B4AEF)
+                    )
                 }
             }
         }
 
-        Spacer(Modifier.height(16.dp))
-
-        // Tombol "+ Tambah Tugas"
-        Button(
-            onClick = onAddTaskClick,
+        // Right Column: Two stacked cards
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp)
+                .weight(1f)
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            // Top Right: Terlewat
+            SummarySmallCard(
+                count = overdueCount,
+                label = "Tugas\nTerlewat",
+                backgroundColor = Color(0xFFFFDADA), // Pinkish
+                textColor = Color(0xFFA84646), // Reddish text
+                modifier = Modifier.weight(1f)
+            )
+
+            // Bottom Right: Semua
+            SummarySmallCard(
+                count = totalCount,
+                label = "Semua\nTugas",
+                backgroundColor = Color(0xFFD6F2F5), // Light Cyan/Greenish
+                textColor = Color(0xFF2E7D85), // Darker Cyan text
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+
+    Spacer(modifier = Modifier.height(24.dp))
+
+    // Row for Title and Add Button
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(
+            text = "Tugas hari ini",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold,
+            color = Color.Black.copy(alpha = 0.8f)
+        )
+
+        androidx.compose.material3.Button(
+            onClick = onAddTaskClick,
+            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFFFCC99), // Peach/Orangeish
+                contentColor = Color.White
+            ),
+            shape = MaterialTheme.shapes.medium
         ) {
             Text(text = "+ Tambah Tugas")
+        }
+    }
+    }
+}
+
+@Composable
+fun SummarySmallCard(
+    count: Int,
+    label: String,
+    backgroundColor: Color,
+    textColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        ),
+        shape = MaterialTheme.shapes.large
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = "$count",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor
+                )
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = textColor.copy(alpha = 0.8f),
+                    lineHeight = 14.sp
+                )
+            }
+
+            // Arrow Circle
+            Card(
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.padding(8.dp),
+                    tint = Color.Black.copy(alpha = 0.5f)
+                )
+            }
         }
     }
 }
