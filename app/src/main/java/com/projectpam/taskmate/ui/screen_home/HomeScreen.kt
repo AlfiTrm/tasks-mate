@@ -1,19 +1,17 @@
 package com.projectpam.taskmate.ui.screen_home
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.projectpam.taskmate.data.model.Task
 import com.projectpam.taskmate.ui.components.TaskItemCard
+import com.projectpam.taskmate.ui.components.TaskMateBottomBar
+import com.projectpam.taskmate.ui.components.TaskMateTopAppBar
 import com.projectpam.taskmate.ui.components.TaskSummarySection
 import com.projectpam.taskmate.viewmodel.TaskViewModel
 
@@ -25,98 +23,66 @@ fun HomeScreen(
     val uiState = taskViewModel.uiState
     val tasks = uiState.tasks
 
-    // Contoh logic simple: hitung jumlah
+    // Calculate counts
     val totalCount = tasks.size
-    val todayCount = totalCount // nanti bisa difilter by tanggal
-    val overdueCount = 0        // nanti isi logic overdue
-
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-    ) {
-
-        // greeting kayak tadi…
-
-        Spacer(Modifier.height(16.dp))
-
-        TaskSummarySection(
-            todayCount = todayCount,
-            overdueCount = overdueCount,
-            totalCount = totalCount,
-            onAddTaskClick = {
-                // TODO: nav ke AddTaskScreen
-            }
-        )
-
-        Spacer(Modifier.height(16.dp))
-
-        Text(
-            text = "Tugas hari ini",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.SemiBold
-        )
-
-        Spacer(Modifier.height(8.dp))
-
-        LazyColumn(
-            modifier = Modifier.weight(1f)
-        ) {
-            items(tasks) { task ->
-                TaskItemCard(
-                    task = task,
-                    onCheckedChange = { checked ->
-                        taskViewModel.setCompleted(task.taskId, checked)
-                    }
-                )
-            }
-        }
-
-        // bottom nav nanti bisa nyusul
+    val todayCount = tasks.count {
+        // Logic filter would go here, for now using dummy logic or assuming all are today as per dummy data
+        true
     }
-}
+    val overdueCount = 2 // Hardcoded from visual requirement or calculate from data
 
-
-@Composable
-fun TaskCard(
-    task: Task,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 6.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        )
-    ) {
-        Row(
+    Scaffold(
+        topBar = {
+            TaskMateTopAppBar(
+                isHome = true,
+                userName = "Biru",
+                taskCount = todayCount
+            )
+        },
+        bottomBar = {
+            TaskMateBottomBar(
+                currentRoute = "home",
+                onNavigate = { /* Navigation logic */ }
+            )
+        },
+        containerColor = Color.White
+    ) { paddingValues ->
+        Column(
             modifier = Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(horizontal = 24.dp)
         ) {
+            Spacer(Modifier.height(24.dp))
 
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = onCheckedChange
+            TaskSummarySection(
+                todayCount = todayCount,
+                overdueCount = overdueCount,
+                totalCount = totalCount
             )
 
-            Spacer(Modifier.width(12.dp))
+            Spacer(Modifier.height(24.dp))
 
-            Column(
-                modifier = Modifier.weight(1f)
+            Text(
+                text = "Tugas hari ini",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black.copy(alpha = 0.8f)
+            )
+
+            Spacer(Modifier.height(16.dp))
+
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                contentPadding = PaddingValues(bottom = 16.dp)
             ) {
-                Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.SemiBold
-                )
-
-                task.dueTime?.let {
-                    Text(
-                        text = it,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                items(tasks) { task ->
+                    TaskItemCard(
+                        task = task,
+                        onCheckedChange = { checked ->
+                            taskViewModel.setCompleted(task.taskId, checked)
+                        },
+                        onEditClick = { /* Handle Edit */ },
+                        onDeleteClick = { /* Handle Delete */ }
                     )
                 }
             }
