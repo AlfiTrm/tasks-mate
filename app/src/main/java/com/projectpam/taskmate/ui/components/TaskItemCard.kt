@@ -1,93 +1,156 @@
 package com.projectpam.taskmate.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Checkbox
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.MoreHoriz
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.projectpam.taskmate.data.model.Task
+import com.projectpam.taskmate.ui.theme.*
 
 @Composable
 fun TaskItemCard(
     task: Task,
     onCheckedChange: (Boolean) -> Unit,
+    onEditClick: (Task) -> Unit = {},
+    onDeleteClick: (Task) -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    val bgColor = when (task.category?.lowercase()) {
-        "urgent" -> Color(0xFFFFE6E6)
-        "important" -> Color(0xFFFFF5E6)
-        else -> Color(0xFFF3F2FF) // default ungu muda
+    var showMenu by remember { mutableStateOf(false) }
+
+    // Dynamic Background Color based on Category
+    val cardBackgroundColor = when (task.category) {
+        "Self Development" -> CategorySelfDevBg
+        "Coolyeah" -> CategoryCoolyeahBg
+        "Daily" -> CategoryDailyBg
+        "Vibing" -> CategoryVibingBg
+        else -> Color.White
     }
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp),
+            .padding(vertical = 8.dp),
         colors = CardDefaults.cardColors(
-            containerColor = bgColor
-        )
+            containerColor = cardBackgroundColor
+        ),
+        shape = MaterialTheme.shapes.medium,
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // Flat look as per design
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 12.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
-
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = onCheckedChange
-            )
-
-            Spacer(Modifier.width(8.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
+            // ROW 1: Checkbox, Title, Time, More Icon
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    text = task.title,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
+                Checkbox(
+                    checked = task.isCompleted,
+                    onCheckedChange = onCheckedChange,
+                    colors = CheckboxDefaults.colors(
+                        checkedColor = Color.Gray,
+                        uncheckedColor = Color.Gray,
+                        checkmarkColor = Color.White
+                    ),
+                    modifier = Modifier.size(24.dp)
                 )
 
-                if (!task.description.isNullOrBlank()) {
-                    Spacer(Modifier.height(2.dp))
+                Spacer(modifier = Modifier.width(12.dp))
+
+                Text(
+                    text = task.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    modifier = Modifier.weight(1f)
+                )
+
+                task.dueTime?.let {
                     Text(
-                        text = task.description ?: "",
+                        text = it,
                         style = MaterialTheme.typography.bodySmall,
-                        color = Color.Black.copy(alpha = 0.7f),
-                        maxLines = 2
+                        color = Color.Black.copy(alpha = 0.6f)
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Box {
+                    IconButton(
+                        onClick = { showMenu = true },
+                        modifier = Modifier.size(24.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.MoreHoriz,
+                            contentDescription = "More",
+                            tint = Color.LightGray
+                        )
+                    }
+                    DropdownMenu(
+                        expanded = showMenu,
+                        onDismissRequest = { showMenu = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text("Edit") },
+                            onClick = {
+                                showMenu = false
+                                onEditClick(task)
+                            }
+                        )
+                        DropdownMenuItem(
+                            text = { Text("Hapus") },
+                            onClick = {
+                                showMenu = false
+                                onDeleteClick(task)
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // ROW 2: Priority Tag
+            task.priority?.let { priority ->
+                val (tagBg, tagText) = when (priority) {
+                    "Urgent" -> PriorityUrgentBg to PriorityUrgentText
+                    "Mid" -> PriorityMidBg to Color.White
+                    "Chill" -> PriorityChillBg to Color.White
+                    else -> Color.Gray to Color.White
+                }
+
+                Box(
+                    modifier = Modifier
+                        .background(tagBg, MaterialTheme.shapes.small)
+                        .padding(horizontal = 8.dp, vertical = 4.dp)
+                ) {
+                    Text(
+                        text = priority, // "Tinggi" in design but "Urgent" in data, mapping if needed? User said "Urgent" in data.
+                        color = tagText,
+                        style = MaterialTheme.typography.labelSmall,
+                        fontWeight = FontWeight.Medium
                     )
                 }
             }
 
-            Spacer(Modifier.width(8.dp))
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // Jam di kanan
-            task.dueTime?.let { time ->
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.White.copy(alpha = 0.7f),
-                            shape = MaterialTheme.shapes.small
-                        )
-                        .padding(horizontal = 8.dp, vertical = 4.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = time,
-                        style = MaterialTheme.typography.labelSmall,
-                        fontWeight = FontWeight.SemiBold
-                    )
-                }
+            // ROW 3: Description
+            task.description?.let { desc ->
+                Text(
+                    text = desc,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.Black.copy(alpha = 0.6f),
+                    lineHeight = 16.sp
+                )
             }
         }
     }
