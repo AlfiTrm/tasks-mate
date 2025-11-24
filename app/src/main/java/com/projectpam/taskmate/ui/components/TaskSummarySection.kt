@@ -21,12 +21,10 @@ fun TaskSummarySection(
     todayCount: Int,
     overdueCount: Int,
     totalCount: Int,
-    onAddTaskClick: () -> Unit = {},
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier.fillMaxWidth()) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(180.dp), // Height adjustment to match visual proportions
         horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -98,31 +96,57 @@ fun TaskSummarySection(
             )
         }
     }
+}
 
-    Spacer(modifier = Modifier.height(24.dp))
-
-    // Row for Title and Add Button
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+@Composable
+fun SummarySmallCard(
+    count: Int,
+    label: String,
+    backgroundColor: Color,
+    textColor: Color,
+    modifier: Modifier = Modifier
+) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = backgroundColor
+        ),
+        shape = MaterialTheme.shapes.large
     ) {
-        Text(
-            text = "Tugas hari ini",
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold,
-            color = Color.Black.copy(alpha = 0.8f)
-        )
-
-        androidx.compose.material3.Button(
-            onClick = onAddTaskClick,
-            colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFFFCC99), // Peach/Orangeish
-                contentColor = Color.White
-            ),
-            shape = MaterialTheme.shapes.medium
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(text = "+ Tambah Tugas")
+            Column {
+                Text(
+                    text = "$count",
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.Bold,
+                    color = textColor
+                )
+                Text(
+                    text = label,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = textColor.copy(alpha = 0.8f),
+                    lineHeight = 14.sp
+                )
+            }
+
+            // Arrow Circle
+            Card(
+                shape = MaterialTheme.shapes.extraLarge,
+                colors = CardDefaults.cardColors(containerColor = Color.White)
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = null,
+                    modifier = Modifier.padding(8.dp),
+                    tint = Color.Black.copy(alpha = 0.5f)
+                )
+            }
         }
     }
     }

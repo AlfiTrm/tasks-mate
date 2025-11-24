@@ -107,7 +107,6 @@ class TaskViewModel(
             title = title,
             description = description,
             category = category,
-            priority = priority,
             dueDate = dueDate,
             dueTime = dueTime
         )

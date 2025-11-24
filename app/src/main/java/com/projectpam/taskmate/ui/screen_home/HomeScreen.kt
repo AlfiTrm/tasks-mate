@@ -59,8 +59,15 @@ fun HomeScreen(
             TaskSummarySection(
                 todayCount = todayCount,
                 overdueCount = overdueCount,
-                totalCount = totalCount,
-                onAddTaskClick = onAddTaskClick
+                totalCount = totalCount
+            )
+
+            Spacer(Modifier.height(24.dp))
+
+            Text(
+                text = "Tugas hari ini",
+                style = MaterialTheme.typography.titleMedium,
+                color = Color.Black.copy(alpha = 0.8f)
             )
 
             Spacer(Modifier.height(16.dp))
