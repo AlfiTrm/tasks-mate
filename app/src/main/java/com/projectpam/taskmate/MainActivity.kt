@@ -7,6 +7,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.projectpam.taskmate.ui.screen_add.AddTaskScreen
 import com.projectpam.taskmate.ui.screen_home.HomeScreen
 import com.projectpam.taskmate.ui.screen_login.LoginScreen
 import com.projectpam.taskmate.ui.theme.TaskmateTheme
@@ -49,6 +50,21 @@ class MainActivity : ComponentActivity() {
                                 navController.navigate("login") {
                                     popUpTo("home") { inclusive = true }
                                 }
+                            },
+                            onAddTaskClick = {
+                                navController.navigate("add_task")
+                            }
+                        )
+                    }
+
+                    composable("add_task") {
+                        AddTaskScreen(
+                            taskViewModel = taskViewModel,
+                            onBackClick = {
+                                navController.popBackStack()
+                            },
+                            onSaveSuccess = {
+                                navController.popBackStack()
                             }
                         )
                     }

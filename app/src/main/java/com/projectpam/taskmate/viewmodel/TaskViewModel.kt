@@ -97,6 +97,7 @@ class TaskViewModel(
         title: String,
         description: String?,
         category: String?,
+        priority: String?,
         dueDate: Timestamp?,
         dueTime: String?
     ) {

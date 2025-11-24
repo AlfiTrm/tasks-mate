@@ -18,7 +18,8 @@ import com.projectpam.taskmate.viewmodel.TaskViewModel
 @Composable
 fun HomeScreen(
     taskViewModel: TaskViewModel,
-    onLogout: () -> Unit
+    onLogout: () -> Unit,
+    onAddTaskClick: () -> Unit
 ) {
     val uiState = taskViewModel.uiState
     val tasks = uiState.tasks
