@@ -7,7 +7,8 @@ data class Task(
     val uid: String = "",
     val title: String = "",
     val description: String? = null,
-    val category: String? = null,
+    val category: String? = null, // "Self Development", "Coolyeah", "Daily", "Vibing"
+    val priority: String? = null, // "Urgent", "Mid", "Chill"
     val dueDate: Timestamp? = null,
     val dueTime: String? = null,
     val isCompleted: Boolean = false,
